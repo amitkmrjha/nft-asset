@@ -1,0 +1,20 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "com.aw.nft.grpc";
+option java_outer_classname = "NFTAssetProto";
+
+package com.aw.nft.grpc;
+
+service NFTAssetService {
+    rpc GetHealth(google.protobuf.Empty) returns (GetHealthResponse);
+}
+
+message GetHealthResponse {
+  string message = 1;
+  string hostname = 2;
+  google.protobuf.Timestamp timestamp = 3;
+}
