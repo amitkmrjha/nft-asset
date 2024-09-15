@@ -33,8 +33,8 @@ object NFTAssetMain:
 
   def init(
       system: ActorSystem[?]
-  ): Unit = {}
-  startGrpc(system)
+  ): Unit =
+    startGrpc(system)
 
   private def startGrpc(
       system: ActorSystem[?]
