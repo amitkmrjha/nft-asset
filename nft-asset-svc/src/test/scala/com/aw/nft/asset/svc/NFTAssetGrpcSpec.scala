@@ -2,7 +2,6 @@ package com.aw.nft.asset.svc
 
 import com.aw.nft.asset.{NFTAssetServer, NFTAssetServiceImpl}
 import com.aw.nft.grpc.{GetHealthResponse, NFTAssetServiceClient}
-import org.scalatest.wordspec.AsyncWordSpec
 import com.google.protobuf.empty.Empty
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko.actor.testkit.typed.scaladsl.ActorTestKit
@@ -13,6 +12,7 @@ import org.scalatest.BeforeAndAfterAll
 import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
+import org.scalatest.wordspec.AsyncWordSpec
 
 import java.util.UUID
 import scala.concurrent.Future

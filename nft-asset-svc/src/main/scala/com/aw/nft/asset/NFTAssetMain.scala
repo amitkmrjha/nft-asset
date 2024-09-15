@@ -4,6 +4,8 @@ import com.typesafe.config.ConfigFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
 import org.apache.pekko.http.scaladsl.Http
+import org.apache.pekko.management.cluster.bootstrap.ClusterBootstrap
+import org.apache.pekko.management.scaladsl.PekkoManagement
 import org.slf4j.LoggerFactory
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -34,6 +36,10 @@ object NFTAssetMain:
   def init(
       system: ActorSystem[?]
   ): Unit =
+
+    PekkoManagement(system).start()
+    ClusterBootstrap(system).start()
+
     startGrpc(system)
 
   private def startGrpc(
