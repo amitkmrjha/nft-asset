@@ -9,12 +9,4 @@ option java_outer_classname = "NFTAssetProto";
 
 package com.aw.nft.grpc;
 
-service NFTAssetService {
-    rpc GetHealth(google.protobuf.Empty) returns (GetHealthResponse);
-}
-
-message GetHealthResponse {
-  string message = 1;
-  string hostname = 2;
-  google.protobuf.Timestamp timestamp = 3;
-}
+service NFTAssetService {}
