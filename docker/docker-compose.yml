@@ -4,7 +4,7 @@ services:
     #command: -configFiles=/flyway/conf/flyway.conf -locations=filesystem:/flyway/sql -postgresql.transactional.lock=false -connectRetries=60 migrate -X
     command: -configFiles=/flyway/conf/flyway.conf -locations=filesystem:/flyway/sql -postgresql.transactional.lock=false -connectRetries=60 migrate
     volumes:
-      - ../ddl_scripts/asset-svc:/flyway/sql
+      - ../ddl_scripts/nft-asset:/flyway/sql
       - ./flyway/docker-flyway-nft-asset.conf:/flyway/conf/flyway.conf
     depends_on:
       - postgres
