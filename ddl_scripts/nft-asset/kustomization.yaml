@@ -1,0 +1,17 @@
+# This file is needed so we can get access to this directory with kustomize
+# When using KIND deployments, we need to be able to add this configmap to get
+# access to the flyway scripts to use in the migrate-db job
+# NOTE: New migration files need to be added as wildcard/glob is not supported in configMapGenerator
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+configMapGenerator:
+  - name: flyway-config-map-asset-svc
+    files:
+      - "V1__createJournalTables.sql"
+      - "V2__createConcurrentIndexes.sql"
+      - "V2__createConcurrentIndexes.sql.conf"
+      - "V3__createProjectionTables.sql"
+      - "V4__userGrants.sql"
+      - "V5__createReadProjectionTables.sql"
+      - "V5.1__dropReadProjectionTables.sql"
+      - "V6__createAssetProjectionTables.sql"
