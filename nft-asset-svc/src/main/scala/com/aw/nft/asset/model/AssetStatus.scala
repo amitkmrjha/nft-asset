@@ -1,6 +1,5 @@
 package com.aw.nft.asset.model
 
-import com.aw.nft.asset.entity.*
 import com.fasterxml.jackson.annotation.{JsonSubTypes, JsonTypeInfo}
 
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME, property = "type")
