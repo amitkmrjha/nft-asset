@@ -1,6 +1,5 @@
 package com.aw.nft.asset
 
-import com.aw.nft.asset.entity.NFTAssetEntity
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -40,8 +39,6 @@ object NFTAssetMain:
 
     PekkoManagement(system).start()
     ClusterBootstrap(system).start()
-
-    NFTAssetEntity.init(system)
 
     startGrpc(system)
 
