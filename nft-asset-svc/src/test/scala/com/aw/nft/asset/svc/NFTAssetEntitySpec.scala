@@ -1,14 +1,7 @@
 package com.aw.nft.asset.svc
 
 import com.aw.nft.asset.entity.NFTAssetEntity
-import com.aw.nft.asset.entity.NFTAssetEntity.{
-  AssetCommand,
-  AssetCreated,
-  AssetEvent,
-  AssetState,
-  CreateAsset,
-  GetAsset
-}
+import com.aw.nft.asset.entity.NFTAssetEntity.*
 import com.aw.nft.asset.model.NFTAsset
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko.Done

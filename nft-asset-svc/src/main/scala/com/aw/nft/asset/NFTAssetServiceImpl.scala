@@ -1,22 +1,16 @@
 package com.aw.nft.asset
 
 import com.aw.nft.asset.entity.NFTAssetEntity
-import com.aw.nft.asset.entity.NFTAssetEntity.{
-  AddFileIdToAsset,
-  AssetCommand,
-  CreateAsset,
-  GetAsset,
-  RemoveAsset,
-  RenameAsset
-}
+import com.aw.nft.asset.entity.NFTAssetEntity.*
 import com.aw.nft.asset.model.NFTAsset
 import com.aw.nft.grpc.*
 import com.google.protobuf.empty.Empty
 import com.google.protobuf.timestamp.Timestamp
+import io.grpc.Status
 import org.apache.pekko.Done
-import org.apache.pekko.Done.done
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, EntityRef}
+import org.apache.pekko.grpc.GrpcServiceException
 import org.apache.pekko.grpc.scaladsl.Metadata
 import org.apache.pekko.util.Timeout
 import org.slf4j.LoggerFactory
@@ -50,18 +44,22 @@ class NFTAssetServiceImpl[A: ActorSystem]() extends NFTAssetServicePowerApi:
     )
     createNewAsset(newAsset)
       .recover { case e =>
-        log.error(s"Failed to create NFT Asset: ${e.getMessage}")
-        CreateNFTAssetResponse(in.assetId, s"unable to create NFT Asset: ${e.getMessage}")
+        val msg = s"Failed to create NFT Asset: ${e.getMessage}"
+        log.error(msg)
+        CreateNFTAssetResponse(in.assetId, msg)
       }
       .map(_ => CreateNFTAssetResponse(in.assetId))
 
   override def getNFTAsset(in: GetNFTAssetRequest, metadata: Metadata): Future[GetNFTAssetResponse] =
     getAsset(in.assetId)
-      .recoverWith { case e =>
-        log.error(s"Failed to get NFT Asset: ${e.getMessage}")
-        Future.failed(e)
-      }
       .map(asset => GetNFTAssetResponse(asset.id, asset.name, asset.description))
+      .recoverWith { case e =>
+        val msg = s"Failed to get NFT Asset: ${e.getMessage}"
+        log.error(msg)
+        Future.failed(
+          new GrpcServiceException(Status.UNKNOWN.withDescription(msg))
+        )
+      }
 
   override def addNFTFileId(in: AddNFTFileIdRequest, metadata: Metadata): Future[AddNFTFileIdResponse] =
     addFileIdToAsset(in.assetId, in.assetFileId)
