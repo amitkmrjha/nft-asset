@@ -1,6 +1,6 @@
 package com.aw.nft.asset.entity
 
-import com.aw.nft.asset.model.{ActiveStatus, NFTAsset}
+import com.aw.nft.asset.model.{ActiveStatus, DeletedStatus, NFTAsset}
 import com.aw.nft.asset.serialization.CborSerializable
 import com.aw.nft.asset.utils.PersistenceUtils
 import org.apache.pekko.Done
@@ -21,14 +21,21 @@ object NFTAssetEntity extends PersistenceUtils:
   // Commands
   sealed trait AssetCommand(val id: String) extends CborSerializable
 
-  final case class CreateAsset(asset: NFTAsset, replyTo: ActorRef[StatusReply[Done]]) extends AssetCommand(asset.id)
-
+  final case class CreateAsset(asset: NFTAsset, replyTo: ActorRef[StatusReply[Done]])  extends AssetCommand(asset.id)
   final case class GetAsset(assetId: String, replyTo: ActorRef[StatusReply[NFTAsset]]) extends AssetCommand(assetId)
+  final case class AddFileIdToAsset(assetId: String, fileId: String, replyTo: ActorRef[StatusReply[NFTAsset]])
+      extends AssetCommand(assetId)
+  final case class RenameAsset(assetId: String, newName: String, replyTo: ActorRef[StatusReply[NFTAsset]])
+      extends AssetCommand(assetId)
+  final case class RemoveAsset(assetId: String, replyTo: ActorRef[StatusReply[Done]])  extends AssetCommand(assetId)
 
   // Events
   sealed trait AssetEvent(val id: String) extends CborSerializable
 
-  final case class AssetCreated(asset: NFTAsset) extends AssetEvent(asset.id)
+  final case class AssetCreated(asset: NFTAsset)     extends AssetEvent(asset.id)
+  final case class AssetFileIdAdded(asset: NFTAsset) extends AssetEvent(asset.id)
+  final case class AssetRenamed(asset: NFTAsset)     extends AssetEvent(asset.id)
+  final case class AssetRemoved(asset: NFTAsset)     extends AssetEvent(asset.id)
 
   // State
   sealed trait AssetState extends CborSerializable:
@@ -38,8 +45,16 @@ object NFTAssetEntity extends PersistenceUtils:
   case object DoesNotExistState extends AssetState:
     override def applyCommand(assetId: String, ctx: ActorContext[AssetCommand], cmd: AssetCommand): CommandReply =
       cmd match
-        case CreateAsset(asset, replyTo) => createAsset(asset, replyTo, ctx)
-        case GetAsset(assetId, replyTo)  => invalidReply(s"The entity ${assetId} is not created yet.", replyTo, ctx)
+        case CreateAsset(asset, replyTo)                =>
+          createAsset(asset, replyTo, ctx)
+        case GetAsset(assetId, replyTo)                 =>
+          invalidReply(s"The entity ${assetId} is not created yet.", replyTo, ctx)
+        case AddFileIdToAsset(assetId, fileId, replyTo) =>
+          invalidReply(s"The entity ${assetId} is not created yet.", replyTo, ctx)
+        case RenameAsset(assetId, newName, replyTo)     =>
+          invalidReply(s"The entity ${assetId} is not created yet.", replyTo, ctx)
+        case RemoveAsset(assetId, replyTo)              =>
+          invalidReply(s"The entity ${assetId} is not created yet.", replyTo, ctx)
 
     override def applyEvent(event: AssetEvent): AssetState = event match
       case AssetCreated(asset) => ActiveState(asset)
@@ -48,17 +63,35 @@ object NFTAssetEntity extends PersistenceUtils:
   case class ActiveState(asset: NFTAsset) extends AssetState:
     override def applyCommand(assetId: String, ctx: ActorContext[AssetCommand], cmd: AssetCommand): CommandReply =
       cmd match
-        case CreateAsset(asset, replyTo) => invalidReply(s"The entity ${asset.id} is in Active state.", replyTo, ctx)
-        case GetAsset(assetId, replyTo)  => getAsset(asset, replyTo, ctx)
+        case CreateAsset(asset, replyTo)                =>
+          invalidReply(s"The entity ${asset.id} is in Active state.", replyTo, ctx)
+        case GetAsset(assetId, replyTo)                 =>
+          getAsset(asset, replyTo, ctx)
+        case AddFileIdToAsset(assetId, fileId, replyTo) =>
+          addFileId(asset, fileId, replyTo, ctx)
+        case RenameAsset(assetId, newName, replyTo)     =>
+          rename(asset, newName, replyTo, ctx)
+        case RemoveAsset(assetId, replyTo)              =>
+          remove(asset, replyTo, ctx)
 
     override def applyEvent(event: AssetEvent): AssetState = event match
-      case _ => this
+      case AssetFileIdAdded(asset) => this.copy(asset = asset)
+      case AssetRenamed(asset)     => this.copy(asset = asset)
+      case AssetRemoved(asset)     => DeletedState(asset)
+      case _                       => this
 
   case class DeletedState(asset: NFTAsset) extends AssetState:
     override def applyCommand(assetId: String, ctx: ActorContext[AssetCommand], cmd: AssetCommand): CommandReply =
       cmd match
-        case CreateAsset(asset, replyTo) => invalidReply(s"The entity ${asset.id} is in Deleted state.", replyTo, ctx)
-        case GetAsset(assetId, replyTo)  => getAsset(asset, replyTo, ctx)
+        case CreateAsset(asset, replyTo)                =>
+          invalidReply(s"The entity ${asset.id} is in Deleted state.", replyTo, ctx)
+        case GetAsset(assetId, replyTo)                 => getAsset(asset, replyTo, ctx)
+        case AddFileIdToAsset(assetId, fileId, replyTo) =>
+          invalidReply(s"The entity ${asset.id} is in Deleted state.", replyTo, ctx)
+        case RenameAsset(assetId, newName, replyTo)     =>
+          invalidReply(s"The entity ${asset.id} is in Deleted state.", replyTo, ctx)
+        case RemoveAsset(assetId, replyTo)              =>
+          invalidReply(s"The entity ${asset.id} is in Deleted state.", replyTo, ctx)
 
     override def applyEvent(event: AssetEvent): AssetState = event match
       case _ => this
@@ -109,6 +142,41 @@ object NFTAssetEntity extends PersistenceUtils:
       ctx: ActorContext[AssetCommand]
   ): CommandReply =
     val evt = AssetCreated(asset.copy(assetStatus = ActiveStatus()))
+    ctx.log.debug("Persisting Event: {} to object {}", evt, asset.id)
+    persistEventAndAck(evt, replyTo)
+
+  private def addFileId(
+      asset: NFTAsset,
+      fileId: String,
+      replyTo: ActorRef[StatusReply[NFTAsset]],
+      ctx: ActorContext[AssetCommand]
+  ): CommandReply =
+    val evt = AssetFileIdAdded(
+      asset.copy(fileId = Some(fileId))
+    )
+    ctx.log.debug("Persisting Event: {} to object {}", evt, asset.id)
+    persistAndReply(evt, replyTo, evt.asset)
+
+  private def rename(
+      asset: NFTAsset,
+      newName: String,
+      replyTo: ActorRef[StatusReply[NFTAsset]],
+      ctx: ActorContext[AssetCommand]
+  ): CommandReply =
+    val evt = AssetRenamed(
+      asset.copy(name = newName)
+    )
+    ctx.log.debug("Persisting Event: {} to object {}", evt, asset.id)
+    persistAndReply(evt, replyTo, evt.asset)
+
+  private def remove(
+      asset: NFTAsset,
+      replyTo: ActorRef[StatusReply[Done]],
+      ctx: ActorContext[AssetCommand]
+  ): CommandReply =
+    val evt = AssetRemoved(
+      asset.copy(assetStatus = DeletedStatus())
+    )
     ctx.log.debug("Persisting Event: {} to object {}", evt, asset.id)
     persistEventAndAck(evt, replyTo)
 

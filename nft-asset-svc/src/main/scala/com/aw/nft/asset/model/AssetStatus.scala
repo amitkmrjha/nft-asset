@@ -25,3 +25,5 @@ object ActiveStatus:
 
 case class DeletedStatus(message: String) extends AssetStatus:
   def value: String = "deleted"
+object DeletedStatus:
+  def apply(): DeletedStatus = DeletedStatus("Asset is deleted and no longer available.")
