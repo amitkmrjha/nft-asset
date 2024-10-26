@@ -1,12 +1,20 @@
 package com.aw.nft.asset
 
 import com.aw.nft.asset.entity.NFTAssetEntity
-import com.aw.nft.asset.entity.NFTAssetEntity.{AssetCommand, CreateAsset, GetAsset}
+import com.aw.nft.asset.entity.NFTAssetEntity.{
+  AddFileIdToAsset,
+  AssetCommand,
+  CreateAsset,
+  GetAsset,
+  RemoveAsset,
+  RenameAsset
+}
 import com.aw.nft.asset.model.NFTAsset
 import com.aw.nft.grpc.*
 import com.google.protobuf.empty.Empty
 import com.google.protobuf.timestamp.Timestamp
 import org.apache.pekko.Done
+import org.apache.pekko.Done.done
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.scaladsl.{ClusterSharding, EntityRef}
 import org.apache.pekko.grpc.scaladsl.Metadata
@@ -41,9 +49,9 @@ class NFTAssetServiceImpl[A: ActorSystem]() extends NFTAssetServicePowerApi:
       description = in.assetDescription
     )
     createNewAsset(newAsset)
-      .recoverWith { case e =>
+      .recover { case e =>
         log.error(s"Failed to create NFT Asset: ${e.getMessage}")
-        Future.failed(e)
+        CreateNFTAssetResponse(in.assetId, s"unable to create NFT Asset: ${e.getMessage}")
       }
       .map(_ => CreateNFTAssetResponse(in.assetId))
 
@@ -55,11 +63,29 @@ class NFTAssetServiceImpl[A: ActorSystem]() extends NFTAssetServicePowerApi:
       }
       .map(asset => GetNFTAssetResponse(asset.id, asset.name, asset.description))
 
-  override def addNFTFileId(in: AddNFTFileIdRequest, metadata: Metadata): Future[AddNFTFileIdResponse] = ???
+  override def addNFTFileId(in: AddNFTFileIdRequest, metadata: Metadata): Future[AddNFTFileIdResponse] =
+    addFileIdToAsset(in.assetId, in.assetFileId)
+      .map(asset => AddNFTFileIdResponse(asset.id, "Done"))
+      .recover { case e =>
+        log.error(s"Failed to add file id to NFT Asset: ${e.getMessage}")
+        AddNFTFileIdResponse(in.assetId, s"unable to add file id to NFT Asset: ${e.getMessage}")
+      }
 
-  override def renameNFTAsset(in: RenameNFTAssetRequest, metadata: Metadata): Future[RenameNFTAssetResponse] = ???
+  override def renameNFTAsset(in: RenameNFTAssetRequest, metadata: Metadata): Future[RenameNFTAssetResponse] =
+    renameAsset(in.assetId, in.assetName)
+      .map(asset => RenameNFTAssetResponse(asset.id, "Done"))
+      .recover { case e =>
+        log.error(s"Failed to rename NFT Asset: ${e.getMessage}")
+        RenameNFTAssetResponse(in.assetId, s"unable to rename NFT Asset: ${e.getMessage}")
+      }
 
-  override def removeNFTAsset(in: RemoveNFTAssetRequest, metadata: Metadata): Future[RemoveNFTAssetResponse] = ???
+  override def removeNFTAsset(in: RemoveNFTAssetRequest, metadata: Metadata): Future[RemoveNFTAssetResponse] =
+    removeAsset(in.assetId)
+      .map(done => RemoveNFTAssetResponse(in.assetId, "Done"))
+      .recover { case e =>
+        log.error(s"Failed to remove NFT Asset: ${e.getMessage}")
+        RemoveNFTAssetResponse(in.assetId, s"unable to remove NFT Asset: ${e.getMessage}")
+      }
 
   private def entityRef(assetId: String): EntityRef[AssetCommand] =
     sharding.entityRefFor(NFTAssetEntity.EntityKey, assetId)
@@ -69,3 +95,12 @@ class NFTAssetServiceImpl[A: ActorSystem]() extends NFTAssetServicePowerApi:
 
   protected def createNewAsset(asset: NFTAsset): Future[Done] =
     entityRef(asset.id).askWithStatus[Done](ref => CreateAsset(asset, ref))
+
+  protected def addFileIdToAsset(assetId: String, fileId: String): Future[NFTAsset] =
+    entityRef(assetId).askWithStatus[NFTAsset](ref => AddFileIdToAsset(assetId, fileId, ref))
+
+  protected def renameAsset(assetId: String, newName: String): Future[NFTAsset] =
+    entityRef(assetId).askWithStatus[NFTAsset](ref => RenameAsset(assetId, newName, ref))
+
+  protected def removeAsset(assetId: String): Future[Done] =
+    entityRef(assetId).askWithStatus[Done](ref => RemoveAsset(assetId, ref))

@@ -32,6 +32,7 @@ message CreateNFTAssetRequest {
 
 message CreateNFTAssetResponse {
   string assetId = 1;
+  string message = 2;
 }
 
 message GetNFTAssetRequest {
