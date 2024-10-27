@@ -10,11 +10,68 @@ option java_outer_classname = "NFTAssetProto";
 package com.aw.nft.grpc;
 
 service NFTAssetService {
-    rpc GetHealth(google.protobuf.Empty) returns (GetHealthResponse);
+  rpc GetHealth(google.protobuf.Empty) returns (GetHealthResponse);
+  rpc CreateNFTAsset(CreateNFTAssetRequest) returns (CreateNFTAssetResponse);
+  rpc GetNFTAsset(GetNFTAssetRequest) returns (GetNFTAssetResponse);
+  rpc AddNFTFileId(AddNFTFileIdRequest) returns (AddNFTFileIdResponse);
+  rpc RenameNFTAsset(RenameNFTAssetRequest) returns (RenameNFTAssetResponse);
+  rpc RemoveNFTAsset(RemoveNFTAssetRequest) returns (RemoveNFTAssetResponse);
 }
 
 message GetHealthResponse {
   string message = 1;
   string hostname = 2;
   google.protobuf.Timestamp timestamp = 3;
+}
+
+message CreateNFTAssetRequest {
+  string assetId = 1;
+  string assetName = 2;
+  string assetDescription = 3;
+}
+
+message CreateNFTAssetResponse {
+  string assetId = 1;
+  string message = 2;
+}
+
+message GetNFTAssetRequest {
+  string assetId = 1;
+}
+
+message GetNFTAssetResponse {
+  string assetId = 1;
+  string assetName = 2;
+  string assetDescription = 3;
+  optional string assetFileId = 4;
+}
+
+message AddNFTFileIdRequest {
+  string assetId = 1;
+  string assetFileId = 2;
+}
+message AddNFTFileIdResponse {
+  string assetId = 1;
+  string message = 2;
+}
+
+
+message RenameNFTAssetRequest {
+  string assetId = 1;
+  string assetName = 2;
+}
+
+message RenameNFTAssetResponse {
+  string assetId = 1;
+  string message = 2;
+}
+
+
+message RemoveNFTAssetRequest {
+  string assetId = 1;
+}
+
+message RemoveNFTAssetResponse {
+  string assetId = 1;
+  string message = 2;
 }
