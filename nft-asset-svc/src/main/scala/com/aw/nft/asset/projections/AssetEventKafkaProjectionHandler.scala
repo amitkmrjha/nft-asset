@@ -32,7 +32,7 @@ class AssetEventKafkaProjectionHandler(
     sendProducer
       .send(producerRecord)
       .map(metadata =>
-        log.info("Published Tenant Event [{}] to topic/partition {}/{}", event, topic, metadata.partition)
+        log.info("Published NFT Asset Event [{}] to topic/partition {}/{}", event, topic, metadata.partition)
         Done
       )
   private def serialize(event: AssetEvent): Array[Byte]                   =
@@ -44,4 +44,4 @@ class AssetEventKafkaProjectionHandler(
           .withAssetDescription(asset.description)
           .withAssetFileId(asset.fileId.getOrElse(""))
           .withAssetStatus(asset.assetStatus.value)
-        ScalaPBAny.pack(message, "nft-asset/com. aw. nft. asset. entity. NFTAssetEntity. AssetCreated").toByteArray
+        ScalaPBAny.pack(message, "nft-asset/com.aw.nft.asset.entity.NFTAssetEntity.AssetCreated").toByteArray

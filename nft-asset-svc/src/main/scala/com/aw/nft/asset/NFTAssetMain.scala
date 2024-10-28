@@ -1,7 +1,7 @@
 package com.aw.nft.asset
 
 import com.aw.nft.asset.entity.NFTAssetEntity
-import com.aw.nft.asset.projections.NFTAssetEventProjection
+import com.aw.nft.asset.projections.{NFTAssetEventKafkaProjection, NFTAssetEventProjection}
 import com.aw.nft.asset.repository.{NFTAssetRepository, NFTAssetRepositoryImpl}
 import com.aw.nft.asset.utils.ScalikeJdbcSetup
 import com.typesafe.config.ConfigFactory
@@ -49,6 +49,7 @@ object NFTAssetMain:
     val assetRepo = new NFTAssetRepositoryImpl
 
     NFTAssetEventProjection.init(system, assetRepo)
+    NFTAssetEventKafkaProjection.init(system)
 
     startGrpc(system, assetRepo)
 
