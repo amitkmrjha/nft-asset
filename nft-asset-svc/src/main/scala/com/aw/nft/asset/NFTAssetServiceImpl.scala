@@ -55,7 +55,6 @@ class NFTAssetServiceImpl[A: ActorSystem](asserRepo: NFTAssetRepository) extends
   override def getNFTAsset(in: GetNFTAssetRequest, metadata: Metadata): Future[GetNFTAssetResponse] =
     getAsset(in.assetId)
       .map { asset =>
-        log.info(s"Asset Entity: value ${asset.assetStatus.value} [${asset.assetStatus.message}]")
         GetNFTAssetResponse.defaultInstance
           .withAssetId(asset.id)
           .withAssetName(asset.name)
