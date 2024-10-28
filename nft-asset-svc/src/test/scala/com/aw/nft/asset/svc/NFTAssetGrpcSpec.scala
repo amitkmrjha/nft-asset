@@ -1,5 +1,7 @@
 package com.aw.nft.asset.svc
 
+import com.aw.nft.asset.model.NFTAsset
+import com.aw.nft.asset.repository.NFTAssetRepository
 import com.aw.nft.asset.{NFTAssetServer, NFTAssetServiceImpl}
 import com.aw.nft.grpc.{GetHealthResponse, NFTAssetServiceClient}
 import com.google.protobuf.empty.Empty
@@ -13,10 +15,18 @@ import org.scalatest.concurrent.ScalaFutures
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.matchers.should.Matchers.shouldBe
 import org.scalatest.wordspec.AsyncWordSpec
+import scalikejdbc.{AutoSession, DBSession}
 
 import java.util.UUID
 import scala.concurrent.Future
 import scala.concurrent.duration.*
+
+object NFTAssetGrpcSpec:
+  val assetRepo = new NFTAssetRepository {
+    override def upsert(asset: NFTAsset)(using s: DBSession = AutoSession): Unit             = ???
+    override def get(id: String)(using s: DBSession = AutoSession): Option[NFTAsset]         = ???
+    override def getByFileId(id: String)(using s: DBSession = AutoSession): Option[NFTAsset] = ???
+  }
 
 class NFTAssetGrpcSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAll with ScalaFutures:
 
@@ -33,7 +43,7 @@ class NFTAssetGrpcSpec extends AsyncWordSpec with Matchers with BeforeAndAfterAl
 
   lazy val grpcInterface = config.getString("nft-asset-svc.grpc.interface")
   lazy val grpcPort      = config.getInt("nft-asset-svc.grpc.port")
-  lazy val serviceImpl   = new NFTAssetServiceImpl()
+  lazy val serviceImpl   = new NFTAssetServiceImpl(NFTAssetGrpcSpec.assetRepo)
 
   val testKit: ActorTestKit = ActorTestKit(config)
 

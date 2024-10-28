@@ -1,4 +1,4 @@
-package com.aw.nft.asset.utils.persistence
+package com.aw.nft.asset.utils
 
 import org.apache.pekko.japi.function.Function
 import org.apache.pekko.projection.jdbc.JdbcSession

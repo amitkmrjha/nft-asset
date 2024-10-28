@@ -1,6 +1,9 @@
 package com.aw.nft.asset
 
 import com.aw.nft.asset.entity.NFTAssetEntity
+import com.aw.nft.asset.projections.NFTAssetEventProjection
+import com.aw.nft.asset.repository.{NFTAssetRepository, NFTAssetRepositoryImpl}
+import com.aw.nft.asset.utils.ScalikeJdbcSetup
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -37,23 +40,28 @@ object NFTAssetMain:
   def init(
       system: ActorSystem[?]
   ): Unit =
-
+    ScalikeJdbcSetup.init(system)
     PekkoManagement(system).start()
     ClusterBootstrap(system).start()
 
     NFTAssetEntity.init(system)
 
-    startGrpc(system)
+    val assetRepo = new NFTAssetRepositoryImpl
+
+    NFTAssetEventProjection.init(system, assetRepo)
+
+    startGrpc(system, assetRepo)
 
   private def startGrpc(
-      system: ActorSystem[?]
+      system: ActorSystem[?],
+      assetRepo: NFTAssetRepository
   ): Future[Http.ServerBinding] =
     given ActorSystem[?]   = system
     given ExecutionContext = system.executionContext
 
     val grpcInterface                       = system.settings.config.getString("nft-asset-svc.grpc.interface")
     val grpcPort                            = system.settings.config.getInt("nft-asset-svc.grpc.port")
-    val serviceImpl                         = new NFTAssetServiceImpl
+    val serviceImpl                         = new NFTAssetServiceImpl(assetRepo)
     val binding: Future[Http.ServerBinding] = NFTAssetServer.start(grpcInterface, grpcPort, serviceImpl)
     system.log.info(s"NFTAsset gRPC server running at $grpcInterface:$grpcPort")
     binding
