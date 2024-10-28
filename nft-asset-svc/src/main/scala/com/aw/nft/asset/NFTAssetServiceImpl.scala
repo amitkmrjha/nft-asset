@@ -102,3 +102,6 @@ class NFTAssetServiceImpl[A: ActorSystem]() extends NFTAssetServicePowerApi:
 
   protected def removeAsset(assetId: String): Future[Done] =
     entityRef(assetId).askWithStatus[Done](ref => RemoveAsset(assetId, ref))
+
+  override def getNFTAssetByFileId(in: GetNFTAssetByFileIdRequest, metadata: Metadata): Future[GetNFTAssetResponse] =
+    ???

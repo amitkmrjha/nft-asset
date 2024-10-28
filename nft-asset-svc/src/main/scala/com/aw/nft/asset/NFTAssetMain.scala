@@ -1,6 +1,9 @@
 package com.aw.nft.asset
 
 import com.aw.nft.asset.entity.NFTAssetEntity
+import com.aw.nft.asset.projections.NFTAssetEventProjection
+import com.aw.nft.asset.repository.NFTAssetRepositoryImpl
+import com.aw.nft.asset.utils.persistence.ScalikeJdbcSetup
 import com.typesafe.config.ConfigFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.actor.typed.scaladsl.Behaviors
@@ -37,11 +40,15 @@ object NFTAssetMain:
   def init(
       system: ActorSystem[?]
   ): Unit =
-
+    ScalikeJdbcSetup.init(system)
     PekkoManagement(system).start()
     ClusterBootstrap(system).start()
 
     NFTAssetEntity.init(system)
+
+    val assetRepo = new NFTAssetRepositoryImpl
+
+    NFTAssetEventProjection.init(system, assetRepo)
 
     startGrpc(system)
 

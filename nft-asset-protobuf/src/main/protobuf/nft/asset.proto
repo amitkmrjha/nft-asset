@@ -13,6 +13,7 @@ service NFTAssetService {
   rpc GetHealth(google.protobuf.Empty) returns (GetHealthResponse);
   rpc CreateNFTAsset(CreateNFTAssetRequest) returns (CreateNFTAssetResponse);
   rpc GetNFTAsset(GetNFTAssetRequest) returns (GetNFTAssetResponse);
+  rpc GetNFTAssetByFileId(GetNFTAssetByFileIdRequest) returns (GetNFTAssetResponse);
   rpc AddNFTFileId(AddNFTFileIdRequest) returns (AddNFTFileIdResponse);
   rpc RenameNFTAsset(RenameNFTAssetRequest) returns (RenameNFTAssetResponse);
   rpc RemoveNFTAsset(RemoveNFTAssetRequest) returns (RemoveNFTAssetResponse);
@@ -37,6 +38,10 @@ message CreateNFTAssetResponse {
 
 message GetNFTAssetRequest {
   string assetId = 1;
+}
+
+message GetNFTAssetByFileIdRequest {
+  string fileId = 1;
 }
 
 message GetNFTAssetResponse {
