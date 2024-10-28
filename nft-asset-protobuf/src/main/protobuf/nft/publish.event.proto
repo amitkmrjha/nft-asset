@@ -1,0 +1,48 @@
+syntax = "proto3";
+
+import "google/protobuf/empty.proto";
+import "google/protobuf/timestamp.proto";
+
+option java_multiple_files = true;
+option java_package = "com.aw.nft.kafka.publish.event";
+option java_outer_classname = "NFTAssetKafkaPublishProto";
+
+package com.aw.nft.kafka.publish.event;
+
+message NFTAssetCreated {
+  string assetId = 1;
+  string assetName = 2;
+  string assetDescription = 3;
+}
+
+message NFTAssetCreatedMessage {
+  string assetId = 1;
+  string assetName = 2;
+  string assetDescription = 3;
+  optional string assetFileId = 4;
+  string assetStatus = 5;
+}
+
+message NFTAssetFileIdAddedMessage {
+  string assetId = 1;
+  string assetName = 2;
+  string assetDescription = 3;
+  optional string assetFileId = 4;
+  string assetStatus = 5;
+}
+
+message NFTAssetRenamedMessage {
+  string assetId = 1;
+  string assetName = 2;
+  string assetDescription = 3;
+  optional string assetFileId = 4;
+  string assetStatus = 5;
+}
+
+message NFTAssetRemovedMessage {
+  string assetId = 1;
+  string assetName = 2;
+  string assetDescription = 3;
+  optional string assetFileId = 4;
+  string assetStatus = 5;
+}

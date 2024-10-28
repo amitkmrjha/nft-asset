@@ -43,12 +43,12 @@ class NFTAssetServiceImpl[A: ActorSystem]() extends NFTAssetServicePowerApi:
       description = in.assetDescription
     )
     createNewAsset(newAsset)
+      .map(_ => CreateNFTAssetResponse(in.assetId, "Done"))
       .recover { case e =>
         val msg = s"Failed to create NFT Asset: ${e.getMessage}"
         log.error(msg)
         CreateNFTAssetResponse(in.assetId, msg)
       }
-      .map(_ => CreateNFTAssetResponse(in.assetId))
 
   override def getNFTAsset(in: GetNFTAssetRequest, metadata: Metadata): Future[GetNFTAssetResponse] =
     getAsset(in.assetId)

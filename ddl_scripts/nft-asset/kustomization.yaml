@@ -12,6 +12,4 @@ configMapGenerator:
       - "V2__createConcurrentIndexes.sql.conf"
       - "V3__createProjectionTables.sql"
       - "V4__userGrants.sql"
-      - "V5__createReadProjectionTables.sql"
-      - "V5.1__dropReadProjectionTables.sql"
-      - "V6__createAssetProjectionTables.sql"
+      - "V5__createNFTProjection.sql"
