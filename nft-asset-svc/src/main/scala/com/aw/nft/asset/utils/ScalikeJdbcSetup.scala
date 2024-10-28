@@ -1,8 +1,8 @@
 package com.aw.nft.asset.utils
 
-import org.apache.pekko.actor.typed.ActorSystem
 import com.typesafe.config.Config
 import com.zaxxer.hikari.HikariDataSource
+import org.apache.pekko.actor.typed.ActorSystem
 import scalikejdbc.config.{DBs, NoEnvPrefix, TypesafeConfig, TypesafeConfigReader}
 import scalikejdbc.{ConnectionPool, DataSourceCloser, DataSourceConnectionPool}
 

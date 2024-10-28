@@ -2,12 +2,12 @@ package com.aw.nft.asset.projections
 
 import com.aw.nft.asset.entity.NFTAssetEntity.*
 import com.aw.nft.asset.repository.NFTAssetRepository
-import org.slf4j.LoggerFactory
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.projection.eventsourced.EventEnvelope
 import org.apache.pekko.projection.jdbc.JdbcSession
 import org.apache.pekko.projection.jdbc.scaladsl.JdbcHandler
 import org.apache.pekko.util.Timeout
+import org.slf4j.LoggerFactory
 
 import scala.concurrent.duration.*
 

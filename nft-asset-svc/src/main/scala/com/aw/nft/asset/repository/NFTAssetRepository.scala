@@ -1,11 +1,10 @@
 package com.aw.nft.asset.repository
 
-import org.slf4j.LoggerFactory
-import scalikejdbc.{sqls, *}
-import com.aw.nft.asset.model.{AssetStatus, DoesNotExistStatus, ActiveStatus, DeletedStatus, NFTAsset}
-
+import com.aw.nft.asset.model.*
 import com.aw.nft.asset.repository.Columns.*
 import com.aw.nft.asset.repository.Tables.*
+import org.slf4j.LoggerFactory
+import scalikejdbc.{sqls, *}
 
 trait NFTAssetRepository:
   def upsert(asset: NFTAsset)(using s: DBSession = AutoSession): Unit

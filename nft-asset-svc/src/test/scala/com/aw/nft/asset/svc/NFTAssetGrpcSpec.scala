@@ -1,7 +1,7 @@
 package com.aw.nft.asset.svc
 
 import com.aw.nft.asset.model.NFTAsset
-import com.aw.nft.asset.repository.{NFTAssetRepository, NFTAssetRepositoryImpl}
+import com.aw.nft.asset.repository.NFTAssetRepository
 import com.aw.nft.asset.{NFTAssetServer, NFTAssetServiceImpl}
 import com.aw.nft.grpc.{GetHealthResponse, NFTAssetServiceClient}
 import com.google.protobuf.empty.Empty

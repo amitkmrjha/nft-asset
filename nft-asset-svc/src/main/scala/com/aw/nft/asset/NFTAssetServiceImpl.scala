@@ -16,11 +16,10 @@ import org.apache.pekko.grpc.scaladsl.Metadata
 import org.apache.pekko.util.Timeout
 import org.slf4j.LoggerFactory
 
-import scala.util.{Success, Failure, Try}
-import scala.concurrent.Future
 import java.net.InetAddress
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.{Failure, Success, Try}
 
 class NFTAssetServiceImpl[A: ActorSystem](asserRepo: NFTAssetRepository) extends NFTAssetServicePowerApi:
 
@@ -61,7 +60,7 @@ class NFTAssetServiceImpl[A: ActorSystem](asserRepo: NFTAssetRepository) extends
           .withAssetId(asset.id)
           .withAssetName(asset.name)
           .withAssetDescription(asset.description)
-          .withStatus(asset.assetStatus.value.toString)
+          .withStatus(asset.assetStatus.value)
           .withAssetFileId(asset.fileId.getOrElse(""))
       }
       .recoverWith { case e =>
