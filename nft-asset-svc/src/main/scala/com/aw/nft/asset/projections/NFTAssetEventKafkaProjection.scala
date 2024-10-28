@@ -3,6 +3,8 @@ package com.aw.nft.asset.projections
 import com.aw.nft.asset.entity.NFTAssetEntity
 import com.aw.nft.asset.entity.NFTAssetEntity.AssetEvent
 import com.aw.nft.asset.utils.ScalikeJdbcSession
+import org.apache.kafka.common.serialization.{ByteArraySerializer, StringSerializer}
+import org.apache.pekko.actor.CoordinatedShutdown
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.ShardedDaemonProcessSettings
 import org.apache.pekko.cluster.sharding.typed.scaladsl.ShardedDaemonProcess
@@ -15,9 +17,6 @@ import org.apache.pekko.projection.eventsourced.scaladsl.EventSourcedProvider
 import org.apache.pekko.projection.jdbc.scaladsl.JdbcProjection
 import org.apache.pekko.projection.scaladsl.{AtLeastOnceProjection, SourceProvider}
 import org.apache.pekko.projection.{ProjectionBehavior, ProjectionId}
-import org.apache.kafka.common.serialization.StringSerializer
-import org.apache.kafka.common.serialization.ByteArraySerializer
-import org.apache.pekko.actor.CoordinatedShutdown
 
 object NFTAssetEventKafkaProjection:
   def init(actorSystem: ActorSystem[?]): Unit =
