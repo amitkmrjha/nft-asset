@@ -49,6 +49,7 @@ message GetNFTAssetResponse {
   string assetName = 2;
   string assetDescription = 3;
   optional string assetFileId = 4;
+  string status = 5;
 }
 
 message AddNFTFileIdRequest {

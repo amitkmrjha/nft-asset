@@ -32,4 +32,4 @@ class AssetEventProjectionHandler(
         assetRepo.upsert(asset)
       case AssetRemoved(asset)     =>
         log.info("AssetRemoved: Deleting read side NFT Asset with id {}", asset.id)
-        assetRepo.delete(asset.id)
+        assetRepo.upsert(asset)

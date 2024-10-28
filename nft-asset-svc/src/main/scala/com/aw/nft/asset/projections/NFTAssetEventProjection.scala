@@ -3,7 +3,7 @@ package com.aw.nft.asset.projections
 import com.aw.nft.asset.entity.NFTAssetEntity
 import com.aw.nft.asset.entity.NFTAssetEntity.AssetEvent
 import com.aw.nft.asset.repository.NFTAssetRepository
-import com.aw.nft.asset.utils.persistence.ScalikeJdbcSession
+import com.aw.nft.asset.utils.ScalikeJdbcSession
 import org.apache.pekko.actor.typed.ActorSystem
 import org.apache.pekko.cluster.sharding.typed.ShardedDaemonProcessSettings
 import org.apache.pekko.cluster.sharding.typed.scaladsl.ShardedDaemonProcess

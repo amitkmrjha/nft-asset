@@ -11,7 +11,6 @@ trait NFTAssetRepository:
   def upsert(asset: NFTAsset)(using s: DBSession = AutoSession): Unit
   def get(id: String)(using s: DBSession = AutoSession): Option[NFTAsset]
   def getByFileId(id: String)(using s: DBSession = AutoSession): Option[NFTAsset]
-  def delete(id: String)(using s: DBSession = AutoSession): Unit
 
 object AssetSqlSyntaxSupport extends SQLSyntaxSupport[NFTAsset]:
   override val tableName: String = nftAssetTableName
@@ -46,9 +45,17 @@ class NFTAssetRepositoryImpl() extends NFTAssetRepository:
           m.column(assetIdColumnName)            -> asset.id,
           m.column(assetNameColumnName)          -> asset.name,
           m.column(assetDescriptionColumnName)   -> asset.description,
-          m.column(assetFileIdColumnName)        -> asset.fileId,
+          m.column(assetFileIdColumnName)        -> asset.fileId.getOrElse(""),
           m.column(assetStatusColumnName)        -> asset.assetStatus.value,
           m.column(assetStatusMessageColumnName) -> asset.assetStatus.message
+        )
+        .append(
+          sqls"ON CONFLICT (${m.column(assetIdColumnName)}) DO UPDATE SET " +
+            sqls"${m.column(assetNameColumnName)} = ${asset.name}, " +
+            sqls"${m.column(assetDescriptionColumnName)} = ${asset.description}, " +
+            sqls"${m.column(assetFileIdColumnName)} = ${asset.fileId.getOrElse("")}, " +
+            sqls"${m.column(assetStatusColumnName)} = ${asset.assetStatus.value}, " +
+            sqls"${m.column(assetStatusMessageColumnName)} = ${asset.assetStatus.message}"
         )
     }.update.apply()
 
@@ -69,10 +76,3 @@ class NFTAssetRepositoryImpl() extends NFTAssetRepository:
         .where
         .eq(m.column(assetFileIdColumnName), id)
     }.map(AssetSqlSyntaxSupport(m.resultName)).single.apply()
-
-  override def delete(id: String)(using s: DBSession): Unit =
-    val m = AssetSqlSyntaxSupport.syntax("m")
-    withSQL {
-      deleteFrom(AssetSqlSyntaxSupport as m).where
-        .eq(m.column(assetIdColumnName), id)
-    }.update.apply()

@@ -1,4 +1,4 @@
-package com.aw.nft.asset.utils.persistence
+package com.aw.nft.asset.utils
 
 import org.apache.pekko.actor.typed.ActorSystem
 import com.typesafe.config.Config

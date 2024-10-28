@@ -3,6 +3,7 @@ package com.aw.nft.asset
 import com.aw.nft.asset.entity.NFTAssetEntity
 import com.aw.nft.asset.entity.NFTAssetEntity.*
 import com.aw.nft.asset.model.NFTAsset
+import com.aw.nft.asset.repository.NFTAssetRepository
 import com.aw.nft.grpc.*
 import com.google.protobuf.empty.Empty
 import com.google.protobuf.timestamp.Timestamp
@@ -15,11 +16,13 @@ import org.apache.pekko.grpc.scaladsl.Metadata
 import org.apache.pekko.util.Timeout
 import org.slf4j.LoggerFactory
 
+import scala.util.{Success, Failure, Try}
+import scala.concurrent.Future
 import java.net.InetAddress
 import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 
-class NFTAssetServiceImpl[A: ActorSystem]() extends NFTAssetServicePowerApi:
+class NFTAssetServiceImpl[A: ActorSystem](asserRepo: NFTAssetRepository) extends NFTAssetServicePowerApi:
 
   val system   = summon[ActorSystem[?]]
   val log      = LoggerFactory.getLogger(getClass)
@@ -52,7 +55,15 @@ class NFTAssetServiceImpl[A: ActorSystem]() extends NFTAssetServicePowerApi:
 
   override def getNFTAsset(in: GetNFTAssetRequest, metadata: Metadata): Future[GetNFTAssetResponse] =
     getAsset(in.assetId)
-      .map(asset => GetNFTAssetResponse(asset.id, asset.name, asset.description))
+      .map { asset =>
+        log.info(s"Asset Entity: value ${asset.assetStatus.value} [${asset.assetStatus.message}]")
+        GetNFTAssetResponse.defaultInstance
+          .withAssetId(asset.id)
+          .withAssetName(asset.name)
+          .withAssetDescription(asset.description)
+          .withStatus(asset.assetStatus.value.toString)
+          .withAssetFileId(asset.fileId.getOrElse(""))
+      }
       .recoverWith { case e =>
         val msg = s"Failed to get NFT Asset: ${e.getMessage}"
         log.error(msg)
@@ -104,4 +115,16 @@ class NFTAssetServiceImpl[A: ActorSystem]() extends NFTAssetServicePowerApi:
     entityRef(assetId).askWithStatus[Done](ref => RemoveAsset(assetId, ref))
 
   override def getNFTAssetByFileId(in: GetNFTAssetByFileIdRequest, metadata: Metadata): Future[GetNFTAssetResponse] =
-    ???
+    Future.fromTry(
+      Try(asserRepo.getByFileId(in.fileId)) match
+        case Success(Some(asset)) =>
+          Success(GetNFTAssetResponse(asset.id, asset.name, asset.description, asset.fileId, asset.assetStatus.value))
+        case Success(None)        =>
+          val msg = s"Asset with file id ${in.fileId} not found or deleted"
+          log.info(msg)
+          throw new GrpcServiceException(Status.UNKNOWN.withDescription(msg))
+        case Failure(exception)   =>
+          val msg = s"unable to get asset by file id: ${exception.getMessage}"
+          log.info(msg)
+          throw new GrpcServiceException(Status.UNKNOWN.withDescription(msg))
+    )
