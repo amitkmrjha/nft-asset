@@ -12,6 +12,16 @@
         <appender-ref ref="STDOUT" />
     </appender>
 
+
+    <logger name="com.zaxxer.hikari" level="ERROR" />
+    <logger name="slick.jdbc" level="ERROR" />
+    <logger name="scalikejdbc.streams" level="ERROR" />
+    <logger name="slick.basic" level="ERROR" />
+    <logger name="slick.util" level="ERROR" />
+    <logger name="oshi.util" level="ERROR" />
+    <logger name="org.apache.kafka" level="ERROR" />
+    <logger name="pekko.cluster.sharding.typed.internal" level="ERROR" />
+
     <root level="INFO">
         <appender-ref ref="ASYNC"/>
     </root>

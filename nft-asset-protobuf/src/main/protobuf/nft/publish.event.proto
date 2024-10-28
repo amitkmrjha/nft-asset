@@ -9,12 +9,6 @@ option java_outer_classname = "NFTAssetKafkaPublishProto";
 
 package com.aw.nft.kafka.publish.event;
 
-message NFTAssetCreated {
-  string assetId = 1;
-  string assetName = 2;
-  string assetDescription = 3;
-}
-
 message NFTAssetCreatedMessage {
   string assetId = 1;
   string assetName = 2;
