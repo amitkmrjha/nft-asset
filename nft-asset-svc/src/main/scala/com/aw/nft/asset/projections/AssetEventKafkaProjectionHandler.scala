@@ -1,8 +1,9 @@
 package com.aw.nft.asset.projections
 
-import com.aw.nft.asset.entity.NFTAssetEntity.{AssetCreated, AssetEvent}
+import com.aw.nft.asset.entity.NFTAssetEntity.*
 import com.aw.nft.asset.model.NFTAsset
 import com.aw.nft.kafka.publish.event.NFTAssetCreatedMessage
+import com.google.protobuf.any.Any as ScalaPBAny
 import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.pekko.Done
 import org.apache.pekko.actor.typed.ActorSystem
@@ -13,7 +14,6 @@ import org.apache.pekko.util.Timeout
 
 import scala.concurrent.duration.*
 import scala.concurrent.{ExecutionContext, Future}
-import com.google.protobuf.any.Any as ScalaPBAny
 
 class AssetEventKafkaProjectionHandler(
     actorSystem: ActorSystem[_],
@@ -37,7 +37,7 @@ class AssetEventKafkaProjectionHandler(
       )
   private def serialize(event: AssetEvent): Array[Byte]                   =
     event match
-      case AssetCreated(asset: NFTAsset) =>
+      case AssetCreated(asset: NFTAsset)     =>
         val message = NFTAssetCreatedMessage.defaultInstance
           .withAssetId(asset.id)
           .withAssetName(asset.name)
@@ -45,3 +45,27 @@ class AssetEventKafkaProjectionHandler(
           .withAssetFileId(asset.fileId.getOrElse(""))
           .withAssetStatus(asset.assetStatus.value)
         ScalaPBAny.pack(message, "nft-asset/com.aw.nft.asset.entity.NFTAssetEntity.AssetCreated").toByteArray
+      case AssetFileIdAdded(asset: NFTAsset) =>
+        val message = NFTAssetCreatedMessage.defaultInstance
+          .withAssetId(asset.id)
+          .withAssetName(asset.name)
+          .withAssetDescription(asset.description)
+          .withAssetFileId(asset.fileId.getOrElse(""))
+          .withAssetStatus(asset.assetStatus.value)
+        ScalaPBAny.pack(message, "nft-asset/com.aw.nft.asset.entity.NFTAssetEntity.AssetFileIdAdded").toByteArray
+      case AssetRenamed(asset: NFTAsset)     =>
+        val message = NFTAssetCreatedMessage.defaultInstance
+          .withAssetId(asset.id)
+          .withAssetName(asset.name)
+          .withAssetDescription(asset.description)
+          .withAssetFileId(asset.fileId.getOrElse(""))
+          .withAssetStatus(asset.assetStatus.value)
+        ScalaPBAny.pack(message, "nft-asset/com.aw.nft.asset.entity.NFTAssetEntity.AssetRenamed").toByteArray
+      case AssetRemoved(asset: NFTAsset)     =>
+        val message = NFTAssetCreatedMessage.defaultInstance
+          .withAssetId(asset.id)
+          .withAssetName(asset.name)
+          .withAssetDescription(asset.description)
+          .withAssetFileId(asset.fileId.getOrElse(""))
+          .withAssetStatus(asset.assetStatus.value)
+        ScalaPBAny.pack(message, "nft-asset/com.aw.nft.asset.entity.NFTAssetEntity.AssetRemoved").toByteArray
