@@ -24,6 +24,24 @@ val pekkoDeps = Seq(
 
 val postgresDeps = Seq(postgres)
 
+val scalaLikeJdbcDeps   = Seq(
+  scalikeJDBC,
+  scalikeJDBCStream,
+  scalikeJDBCConfig,
+  scalikeJDBCTest,
+  sslConfig
+)
+val alpekkoKafkaDeps    = Seq(
+  alpekkoKafka,
+  alpekkoKafkaTestKit
+)
+val pekkoProjectionDeps = Seq(
+  pekkoPersistenceEventSourcedProjection,
+  pekkoDurableStateProjection,
+  pekkoJDBCProjection,
+  pekkoKafkaProjection
+) ++ alpekkoKafkaDeps
+
 val excludeLibraryDependencies = Seq(
   ExclusionRule(
     "ssl-config-core_2.13"
@@ -43,7 +61,9 @@ lazy val `nft-asset-svc` = (project in file("nft-asset-svc"))
   .enablePlugins(JavaServerAppPackaging, PekkoGrpcPlugin, JavaAgent)
   .settings(buildSettings *)
   .settings(
-    libraryDependencies ++= commonDeps ++ pekkoDeps ++ postgresDeps ++ Seq(sslConfig),
+    libraryDependencies ++= commonDeps ++ pekkoDeps ++ pekkoProjectionDeps ++ scalaLikeJdbcDeps ++ postgresDeps ++ Seq(
+      sslConfig
+    ),
     excludeDependencies ++= excludeLibraryDependencies
   )
   .dependsOn(`nft-asset-protobuf`)

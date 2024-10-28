@@ -35,6 +35,27 @@ object Dependencies {
   val pekkoStream         = "org.apache.pekko" %% "pekko-stream"                  % Version.pekko
   val pekkoJackson        = "org.apache.pekko" %% "pekko-serialization-jackson"   % Version.pekko
 
+  val alpekkoKafka        = ("org.apache.pekko" %% "pekko-connectors-kafka" % Version.pekkoKafka)
+  val alpekkoKafkaTestKit =
+    "org.apache.pekko" %% "pekko-connectors-kafka-testkit" % Version.pekkoKafka % Test
+
+  val pekkoPersistenceEventSourcedProjection =
+    "org.apache.pekko" %% "pekko-projection-eventsourced" % Version.pekkoProjection
+  val pekkoDurableStateProjection =
+    "org.apache.pekko" %% "pekko-projection-durable-state" % Version.pekkoProjection
+  val pekkoJDBCProjection =
+    "org.apache.pekko" %% "pekko-projection-jdbc" % Version.pekkoProjection
+  val pekkoKafkaProjection =
+    "org.apache.pekko" %% "pekko-projection-kafka" % Version.pekkoProjection
+
+  val scalikeJDBC       = "org.scalikejdbc" %% "scalikejdbc" % Version.scalikeJDBC
+  val scalikeJDBCStream =
+    "org.scalikejdbc" %% "scalikejdbc-streams" % Version.scalikeJDBCStream
+  val scalikeJDBCConfig =
+    "org.scalikejdbc" %% "scalikejdbc-config" % Version.scalikeJDBC
+  val scalikeJDBCTest =
+    "org.scalikejdbc" %% "scalikejdbc-test" % Version.scalikeJDBC % "test"
+
   val postgres = "org.postgresql" % "postgresql" % Version.postgres
 
   val sslConfig = "com.typesafe" %% "ssl-config-core" % "0.6.1"
