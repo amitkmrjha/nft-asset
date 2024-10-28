@@ -3,7 +3,6 @@ package com.aw.nft.asset
 import com.aw.nft.asset.entity.NFTAssetEntity
 import com.aw.nft.asset.entity.NFTAssetEntity.*
 import com.aw.nft.asset.model.NFTAsset
-import com.aw.nft.asset.repository.NFTAssetRepository
 import com.aw.nft.grpc.*
 import com.google.protobuf.empty.Empty
 import com.google.protobuf.timestamp.Timestamp
@@ -21,7 +20,7 @@ import java.time.Instant
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
 
-class NFTAssetServiceImpl[A: ActorSystem](asserRepo: NFTAssetRepository) extends NFTAssetServicePowerApi:
+class NFTAssetServiceImpl[A: ActorSystem]() extends NFTAssetServicePowerApi:
 
   val system   = summon[ActorSystem[?]]
   val log      = LoggerFactory.getLogger(getClass)
@@ -113,16 +112,4 @@ class NFTAssetServiceImpl[A: ActorSystem](asserRepo: NFTAssetRepository) extends
     entityRef(assetId).askWithStatus[Done](ref => RemoveAsset(assetId, ref))
 
   override def getNFTAssetByFileId(in: GetNFTAssetByFileIdRequest, metadata: Metadata): Future[GetNFTAssetResponse] =
-    Future.fromTry(
-      Try(asserRepo.getByFileId(in.fileId)) match
-        case Success(Some(asset)) =>
-          Success(GetNFTAssetResponse(asset.id, asset.name, asset.description, asset.fileId, asset.assetStatus.value))
-        case Success(None)        =>
-          val msg = s"Asset with file id ${in.fileId} not found or deleted"
-          log.info(msg)
-          throw new GrpcServiceException(Status.UNKNOWN.withDescription(msg))
-        case Failure(exception)   =>
-          val msg = s"unable to get asset by file id: ${exception.getMessage}"
-          log.info(msg)
-          throw new GrpcServiceException(Status.UNKNOWN.withDescription(msg))
-    )
+    Future.failed(new GrpcServiceException(Status.UNIMPLEMENTED.withDescription("Not implemented yet")))
