@@ -49,6 +49,8 @@ object Dependencies {
   val pekkoKafkaProjection =
     "org.apache.pekko" %% "pekko-projection-kafka" % Version.pekkoProjection
 
+  val pekkoQuartzSchedular = "io.github.samueleresca" %% "pekko-quartz-scheduler" % Version.pekkoQuartz
+
   val scalikeJDBC       = "org.scalikejdbc" %% "scalikejdbc" % Version.scalikeJDBC
   val scalikeJDBCStream =
     "org.scalikejdbc" %% "scalikejdbc-streams" % Version.scalikeJDBCStream

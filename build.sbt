@@ -63,7 +63,8 @@ lazy val `nft-asset-svc` = (project in file("nft-asset-svc"))
   .settings(buildSettings *)
   .settings(
     libraryDependencies ++= commonDeps ++ pekkoDeps ++ pekkoProjectionDeps ++ scalaLikeJdbcDeps ++ postgresDeps ++ Seq(
-      sslConfig
+      sslConfig,
+      pekkoQuartzSchedular
     ),
     excludeDependencies ++= excludeLibraryDependencies
   )

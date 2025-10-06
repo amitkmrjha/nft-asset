@@ -10,6 +10,7 @@ object Version {
   val pekkoManagement      = "1.1.1"
   val pekkoPersistenceJdbc = "1.1.1"
   val pekkoSpi             = "0.1.1"
+  val pekkoQuartz          = "1.3.0-pekko-1.1.x"
   val slick                = "3.3.3"
   val scalikeJDBC          = "4.3.0"
   val scalikeJDBCStream    = "4.3.0"
