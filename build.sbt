@@ -19,6 +19,7 @@ val pekkoDeps = Seq(
   pekkoHttpSprayJson,
   pekkoHttp,
   pekkoStream,
+  pekkoStreamsTestKit,
   pekkoJackson
 )
 
