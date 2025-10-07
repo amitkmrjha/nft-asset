@@ -22,7 +22,8 @@ object Dependencies {
   val pekkoClusterShardingTyped       = "org.apache.pekko"  %% "pekko-cluster-sharding-typed"   % Version.pekko
   val pekkoPersistence                = ("org.apache.pekko" %% "pekko-persistence-typed"        % Version.pekko)
   val pekkoPersistenceTestKit         = "org.apache.pekko"  %% "pekko-persistence-testkit"      % Version.pekko % Test
-  val pekkoPersistenceJdbc            = "org.apache.pekko"  %% "pekko-persistence-jdbc"         % Version.pekkoPersistenceJdbc
+  val pekkoPersistenceR2dbc           = "org.apache.pekko"  %% "pekko-persistence-r2dbc"        % Version.pekkoPersistenceR2dbc
+  val pekkoPersistenceR2dbc           = "org.apache.pekko"  %% "pekko-projection-r2dbc"         % Version.pekkoPersistenceR2dbc
   val pekkoPersistenceQuery           = "org.apache.pekko"  %% "pekko-persistence-query"        % Version.pekko
   val pekkoDiscovery                  = "org.apache.pekko"  %% "pekko-discovery"                % Version.pekko
   val pekkoDiscoveryKubernetes        = "org.apache.pekko"  %% "pekko-discovery-kubernetes-api" % Version.pekkoManagement
