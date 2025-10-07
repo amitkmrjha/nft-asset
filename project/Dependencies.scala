@@ -57,6 +57,8 @@ object Dependencies {
   val scalikeJDBCTest =
     "org.scalikejdbc" %% "scalikejdbc-test" % Version.scalikeJDBC % "test"
 
+  val scalikeAthena = "com.zaneli" %% "scalikejdbc-athena" % Version.scalikeAthena
+
   val postgres = "org.postgresql" % "postgresql" % Version.postgres
 
   val sslConfig = "com.typesafe" %% "ssl-config-core" % "0.6.1"

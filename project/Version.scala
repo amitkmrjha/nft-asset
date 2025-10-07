@@ -11,8 +11,9 @@ object Version {
   val pekkoPersistenceJdbc = "1.1.1"
   val pekkoSpi             = "0.1.1"
   val slick                = "3.3.3"
-  val scalikeJDBC          = "4.3.0"
-  val scalikeJDBCStream    = "4.3.0"
+  val scalikeJDBC          = "4.3.5"
+  val scalikeJDBCStream    = "4.3.5"
+  val scalikeAthena        = "0.4.0"
   val sslConfig            = "0.6.1"
   val postgres             = "42.7.3"
 }

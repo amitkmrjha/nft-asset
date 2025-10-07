@@ -43,7 +43,10 @@ lazy val `nft-asset-svc` = (project in file("nft-asset-svc"))
   .enablePlugins(JavaServerAppPackaging, PekkoGrpcPlugin, JavaAgent)
   .settings(buildSettings *)
   .settings(
-    libraryDependencies ++= commonDeps ++ pekkoDeps ++ postgresDeps ++ Seq(sslConfig),
+    libraryDependencies ++= commonDeps ++ pekkoDeps ++ postgresDeps ++ Seq(
+      sslConfig,
+      scalikeAthena
+    ),
     excludeDependencies ++= excludeLibraryDependencies
   )
   .dependsOn(`nft-asset-protobuf`)
